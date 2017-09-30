@@ -13,18 +13,22 @@ connection = pymysql.connect(host='classmysql.engr.oregonstate.edu',
 
 @app.route('/')
 def demo_page():
-    try: 
-        with connection.cursor() as cursor:
-            create_string = "CREATE TABLE diagnostic(id INT PRIMARY KEY AUTO_INCREMENT,text VARCHAR(255) NOT NULL)"
+    #try: 
+    with connection.cursor() as cursor:
+        create_string = "CREATE TABLE diagnostic(id INT PRIMARY KEY AUTO_INCREMENT,text VARCHAR(255) NOT NULL)"
+        try:
             cursor.execute('DROP TABLE IF EXISTS diagnostic')
-            cursor.execute(create_string)
-            cursor.execute('INSERT INTO diagnostic (`text`) VALUES ("MySQL is Working!")')
-            cursor.execute('SELECT * FROM diagnostic')
-            results = cursor.fetchall()
-    except:
-        results = {'error': 'PyMySQL error, check logs'}
+        except:
+            pass
+        cursor.execute(create_string)
+        cursor.execute('INSERT INTO diagnostic (`text`) VALUES ("MySQL is Working!")')
+        cursor.execute('SELECT * FROM diagnostic')
+        results = cursor.fetchall()
+    #except:
+    #    results = {'error': 'PyMySQL error, check logs'}
 
     return render_template('index.html', results=results)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=19538)
+    #app.run(host='0.0.0.0', port=19538)
+    app.run()
