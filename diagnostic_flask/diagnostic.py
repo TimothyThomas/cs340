@@ -11,6 +11,9 @@ def demo_page():
                                 password='9379',
                                 db='cs340_thomasti',
                                 autocommit=True,
+                                connect_timeout=60,
+                                read_timeout=60,
+                                write_timeout=60,
                                 cursorclass=pymysql.cursors.DictCursor)
 
     with connection.cursor() as cursor:
@@ -24,9 +27,5 @@ def demo_page():
     return render_template('index.html', results=results)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=19538, 
-            connect_timeout=60,
-            read_timeout=60,
-            write_timeout=60,
-            )
+    app.run(host='0.0.0.0', port=19538)
     app.run(debug=True)
