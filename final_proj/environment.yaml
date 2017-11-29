@@ -1,0 +1,26 @@
+name: cs340
+channels:
+- defaults
+dependencies:
+- certifi=2016.2.28=py36_0
+- click=6.7=py36_0
+- flask=0.12.2=py36_0
+- itsdangerous=0.24=py36_0
+- jinja2=2.9.6=py36_0
+- markupsafe=1.0=py36_0
+- openssl=1.0.2l=0
+- pip=9.0.1=py36_1
+- python=3.6.2=0
+- readline=6.2=2
+- setuptools=36.4.0=py36_1
+- sqlite=3.13.0=0
+- tk=8.5.18=0
+- werkzeug=0.12.2=py36_0
+- wheel=0.29.0=py36_0
+- xz=5.2.3=0
+- zlib=1.2.11=0
+- pip:
+  - cryptocount (/home/tim/osu/340/project)==0.0.0
+  - flask-mysql==1.4.0
+  - pymysql==0.7.11
+prefix: /home/tim/anaconda3/envs/cs340
