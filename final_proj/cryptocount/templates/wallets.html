@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Your Wallets</h1>
+    <table class="w3-table w3-bordered w3-striped">
+        <thead><tr><th>Name</th></tr></thead>
+        {% for row in results %}
+        <tr>
+            <td>{{ row['name'] }}</td>
+            <td>
+                <a href="{{ url_for('show_wallet', wallet_id=row['id']) }}">view wallet</a>
+            </td>
+            <td>
+                <form action="{{ url_for('delete_wallet') }}" method="post" class=delete-wallet>
+                    <input type="hidden" name="wallet_id" value="{{ row['id'] }}">
+                    <input type="submit" value="Delete" />
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p></p>
+
+    <form action="{{ url_for('add_wallet') }}" method=post class=add_wallet>
+    <fieldset>
+        <legend>Add a new wallet here:</legend>
+        <p>
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" size="20">
+        </p>
+        <p>
+        <input type="submit" id="add_wallet" value="add wallet">
+        </p>
+    </fieldset>
+    </form>
+    <p></p>
+<a href="{{ url_for('show_currency_balances') }}">back to current balances</a>
+{% endblock %}

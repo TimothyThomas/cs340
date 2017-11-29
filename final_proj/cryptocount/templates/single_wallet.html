@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Currently Viewing Wallet: {{ results['wallet_name'] }} </h1>
+    <h2>Current Balances</h2>
+<table class="w3-table w3-bordered w3-striped">
+    <thead><tr><th>Coin</th><th>Balance</th></tr></thead>
+    {% for row in results['wallet_balances'] %}
+    <tr>
+        <td>{{ row['ticker'] }}</td>
+        <td>{{ row['amount'] }}</td>
+        <td>
+            <form action="{{ url_for('delete_wallet_currency', wallet_id=results['wallet_id']) }}" method="post" class=delete-wallet_currency>
+                <input type="hidden" name="currency_id" value="{{ row['curid'] }}">
+                <input type="submit" value="Delete" 
+                 onclick="return confirm('Are you sure?  This will delete all transactions linked to this wallet and currency type')"/>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<p></p>
+    <form action="{{ url_for('add_wallet_currency', wallet_id=results['wallet_id']) }}" method=post class=add_wallet_currency>
+    <fieldset>
+        <legend>Add a currency to hold in this wallet</legend>
+        <p>
+            <label for="currency">Currency:</label>
+            <select name="currency_id" id="ticker">
+                {% for row in results['currencies_not_in_wallet'] %}
+                    <option value={{ row['id'] }}>{{ row['ticker'] }}</option>
+                {% endfor %}
+            </select> (if this dropdown box is empty, this wallet already holds all available currencies)
+        </p> <p>
+            <label for="initial_amount">Initial Amount:</label>
+            <input type="float" name="initial_amount" id="initial_amount" size="20", value=1.0>
+        </p>
+        <p>
+            <input type="submit" id="add_wallet_currency" value="add currency to wallet">
+        </p>
+    </fieldset>
+    </form>
+    <p></p>
+<h2>Transaction History</h2>
+    <table class="w3-table w3-bordered w3-striped">
+        <thead><tr>
+                <th>Date</th><th>Currency</th><th>Amount</th><th>To/From</th><th>Notes</th>
+        </tr></thead>
+        {% for row in results['wallet_transactions'] %}
+        <tr>
+            <td>{{ row['date'] }}</td>
+            <td> {{ row['ticker'] }}</td>
+            <td> {{ row['amount'] }}</td>
+            <td> {{ row['contact'] }}</td>
+            <td> {{ row['notes'] }}</td>
+            <td>
+                <form action="{{ url_for('delete_transaction', wallet_id=results['wallet_id']) }}" method="post" class=delete-transaction>
+                    <input type="hidden" name="transaction_id" value="{{ row['id'] }}">
+                    <input type="submit" value="Delete" />
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p></p>
+
+    <form action="{{ url_for('add_transaction', wallet_id=results['wallet_id']) }}" method=post class=add_transaction>
+    <fieldset>
+        <legend>Add a new transaction here:</legend>
+        <p>
+        <label for="date">Date:</label>
+        <input type="date" name="date" id="date" size="20" value={{ results['today'] }}>
+        </p>
+        <p>
+            <label for="currency">Currency:</label>
+            <select name="currency_id" id="ticker">
+                {% for row in results['wallet_currencies'] %}
+                    <option value={{ row['id'] }}>{{ row['ticker'] }}</option>
+                {% endfor %}
+            </select>
+        </p> <p>
+            <label for="amount">Amount:</label>
+            <input type="float" name="amount" id="amount" size="20", value=1.0>
+        </p>
+        <p>
+            <label for="contact">To/From:</label>
+            <select name="contact_id" id="contact">
+                {% for row in results['contacts'] %}
+                    <option value={{ row['id'] }}>{{ row['name'] }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            <label for="notes">Notes:</label>
+            <input type="text" name="notes" id="notes" size="20" maxlength="100">
+        </p>
+        <p>
+            <input type="submit" id="add_transaction" value="add transaction">
+        </p>
+    </fieldset>
+    </form>
+    <p></p>
+<a href="{{ url_for('show_currency_balances') }}">back to current balances</a>
+{% endblock %}

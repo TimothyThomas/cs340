@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+    <head>
+	<title>Crypto-Currency Tracker</title>
+    </head>
+<link rel="stylesheet" href="static/style.css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts/googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<body>
+    <div class="topnav" id="myTopnav">
+        <a href="{{ url_for('show_all_wallets') }}">wallets</a>
+        <a href="{{ url_for('currencies') }}">currencies</a>
+        <a href="{{ url_for('contacts') }}">contacts</a>
+    </div>
+</body>
+    <hr>
+    {% block content %}{% endblock %}
+</body>
+</html>

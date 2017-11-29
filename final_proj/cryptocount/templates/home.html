@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Current Balances:</h1>
+    <table class="w3-table w3-bordered w3-striped">
+        <thead><tr><th>Coin</th><th>Total</th></tr></thead>
+        {% for row in results %}
+        <tr>
+            <td>{{ row['Coin'] }}</td>
+            <td>{{ row['Total'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Your Contacts</h1>
+    <table class="w3-table w3-bordered w3-striped">
+        <thead><tr><th>Name</th></tr></thead>
+        {% for row in results %}
+        <tr>
+            <td>{{ row['name'] }}</td>
+            <td><form action="{{ url_for('delete_contact') }}" method="post" class=delete-contact>
+                    <input type="hidden" name="contact_id" value="{{ row['id'] }}">
+                    <input type="submit" value="Delete"
+                 onclick="return confirm('Are you sure?  This will delete all transactions with this contact.')"/>
+                </form></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p></p>
+
+    <form action="{{ url_for('add_contact') }}" method=post class=add_contact>
+    <fieldset>
+        <legend>Add a new contact here:</legend>
+        <p>
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" size="20">
+        </p>
+        <p>
+        <input type="submit" id="add_contact" value="add contact">
+        </p>
+    </fieldset>
+    </form>
+    <p></p>
+<a href="{{ url_for('show_currency_balances') }}">back to current balances</a>
+{% endblock %}
