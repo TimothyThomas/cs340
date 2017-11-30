@@ -40,6 +40,18 @@
     </form>
     <p></p>
 <h2>Transaction History</h2>
+    <p>
+        <form action="{{ url_for('show_wallet', wallet_id=results['wallet_id']) }}" method=post class=filter_transaction>
+        <label for="currency">Filter by:</label>
+        <select name="filter_on_currency_id" id="ticker">
+            <option value='all'>all</option>
+            {% for row in results['wallet_currencies'] %}
+                <option value="{{ row['id'] }}" {% if results['filter_on_currency_id']|int==row['id'] %} selected="selected"{% endif %}>{{ row['ticker'] }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" name="filter_on_currency_id" value="filter transactions"/>
+        </form>
+    </p>
     <table class="w3-table w3-bordered w3-striped">
         <thead><tr>
                 <th>Date</th><th>Currency</th><th>Amount</th><th>To/From</th><th>Notes</th>
@@ -54,7 +66,7 @@
             <td>
                 <form action="{{ url_for('delete_transaction', wallet_id=results['wallet_id']) }}" method="post" class=delete-transaction>
                     <input type="hidden" name="transaction_id" value="{{ row['id'] }}">
-                    <input type="submit" value="Delete" />
+                    <input type="submit" value="Delete"/>
                 </form>
             </td>
         </tr>
@@ -76,7 +88,8 @@
                     <option value={{ row['id'] }}>{{ row['ticker'] }}</option>
                 {% endfor %}
             </select>
-        </p> <p>
+        </p>
+        <p>
             <label for="amount">Amount:</label>
             <input type="float" name="amount" id="amount" size="20", value=1.0>
         </p>

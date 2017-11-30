@@ -89,7 +89,7 @@ def add_wallet():
         cursor.execute("INSERT INTO wallet (name) values (%s)",
                        (request.form['name']))
         #flash("New wallet successfully added")
-    return redirect(url_for('wallets'))
+    return redirect(url_for('show_all_wallets'))
 
 @app.route('/delete_wallet', methods=['POST'])
 def delete_wallet():
@@ -97,7 +97,7 @@ def delete_wallet():
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM wallet WHERE id = %s", (request.form['wallet_id']))
     #flash("Wallet deleted.")
-    return redirect(url_for('wallets'))
+    return redirect(url_for('show_all_wallets'))
 
 
 @app.route('/currencies')
@@ -153,29 +153,45 @@ def delete_contact():
     #flash("Contact deleted.")
     return redirect(url_for('contacts'))
 
-@app.route('/wallets/<wallet_id>')
-def show_wallet(wallet_id):
-    """Show all balances and transactions for a given wallet."""
+@app.route('/wallets/<wallet_id>', methods=['GET','POST'])
+def show_wallet(wallet_id, filter_on_currency_id=None):
+    """Show all balances and transactions for a given wallet and currency
+    (default is all currencies in wallet)."""
     connection = connect_db()
     results = {'wallet_id': wallet_id,
                'today': get_today_date()}
+    if not filter_on_currency_id:
+        filter_on_currency_id = request.form.get('filter_on_currency_id', 'all')
+    results['filter_on_currency_id'] = filter_on_currency_id 
+    print(results)
 
     with connection.cursor() as cursor:
-        query = """SELECT T.id as id, T.date as date, currency.ticker as ticker, T.amount as amount, 
-W.name as wallet, contact.name as contact, T.notes as notes FROM transaction T
-INNER JOIN currency on currency.id = T.curid        
-INNER JOIN contact on contact.id = T.contid
-INNER JOIN wallet W on W.id = T.wid
-WHERE W.id = (%s);"""
-        cursor.execute(query, (wallet_id))
-        results['wallet_transactions'] = cursor.fetchall()
-
         # get list of currencies held in wallet (used in add transaction dropdown box)
         cursor.execute("""SELECT currency.id as id, currency.ticker as ticker FROM currency
 INNER JOIN wallet_currency WC on WC.cid = currency.id 
 INNER JOIN wallet W on W.id = WC.wid
 WHERE W.id = (%s)""", (wallet_id))
         results['wallet_currencies'] = cursor.fetchall() 
+
+        # get list of transactions
+        if filter_on_currency_id not in ['all', None]:
+            print(f"filtering transactions based on currency ID {filter_on_currency_id}")
+            query = """SELECT T.id as id, T.date as date, currency.ticker as ticker, T.amount as amount, 
+W.name as wallet, contact.name as contact, T.notes as notes FROM transaction T
+INNER JOIN currency on currency.id = T.curid        
+INNER JOIN contact on contact.id = T.contid
+INNER JOIN wallet W on W.id = T.wid
+WHERE W.id = (%s) AND currency.id = (%s);"""
+            cursor.execute(query, (wallet_id, filter_on_currency_id))
+        else:
+            query = """SELECT T.id as id, T.date as date, currency.ticker as ticker, T.amount as amount, 
+W.name as wallet, contact.name as contact, T.notes as notes FROM transaction T
+INNER JOIN currency on currency.id = T.curid        
+INNER JOIN contact on contact.id = T.contid
+INNER JOIN wallet W on W.id = T.wid
+WHERE W.id = (%s);"""
+            cursor.execute(query, (wallet_id))
+        results['wallet_transactions'] = cursor.fetchall()
 
         # get list of currencies NOT held in wallet (used in add wallet_currency dropdown box)
         cursor.execute("""SELECT currency.id as id, currency.ticker as ticker FROM currency
@@ -223,7 +239,7 @@ def add_transaction(wallet_id):
         query = """UPDATE wallet_currency SET amount=(%s) WHERE wid=(%s) and cid=(%s)"""
         cursor.execute(query, (new_amt, wallet_id, request.form['currency_id']))
 
-    return redirect(url_for('show_wallet', wallet_id=wallet_id))
+    return redirect(url_for('show_wallet', wallet_id=wallet_id, currency_id='all'))
 
 @app.route('/delete_transaction/<wallet_id>', methods=['POST'])
 def delete_transaction(wallet_id):
@@ -249,7 +265,8 @@ def delete_transaction(wallet_id):
         cursor.execute("DELETE FROM transaction WHERE id = %s", (request.form['transaction_id']))
         #flash("Transaction deleted.")
         #flash("Wallet balance updated.")
-    return redirect(url_for('show_wallet', wallet_id=wallet_id))
+    return redirect(url_for('show_wallet', wallet_id=wallet_id, currency_id='all'))
+
 
 @app.route('/add_wallet_currency/<wallet_id>', methods=['POST'])
 def add_wallet_currency(wallet_id):
@@ -257,7 +274,7 @@ def add_wallet_currency(wallet_id):
     with connection.cursor() as cursor:
         query = """INSERT INTO wallet_currency (wid, cid, amount) VALUES (%s, %s, %s)"""
         cursor.execute(query, ( wallet_id, request.form['currency_id'], request.form['initial_amount']))
-    return redirect(url_for('show_wallet', wallet_id=wallet_id))
+    return redirect(url_for('show_wallet', wallet_id=wallet_id, currency_id='all'))
 
 
 @app.route('/delete_wallet_currency/<wallet_id>', methods=['POST'])
@@ -272,7 +289,7 @@ def delete_wallet_currency(wallet_id):
         # now delete the wallet_currency
         cursor.execute("DELETE FROM wallet_currency WHERE wid = %s and cid=%s", 
                 (wallet_id, request.form['currency_id']))
-    return redirect(url_for('show_wallet', wallet_id=wallet_id))
+    return redirect(url_for('show_wallet', wallet_id=wallet_id, currency_id='all'))
 
 
 
