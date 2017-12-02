@@ -1,9 +1,7 @@
 name,type
-Tim Thomas,person
 Bob Smith,person
 Alice Johnson,person
-Coinbase,exchange
 GDAX,exchange
 Poloniex,exchange
-Nanopool,business
-Steam,business
+Overstock,retailer
+Steam,retailer

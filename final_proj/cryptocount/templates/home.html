@@ -6,7 +6,7 @@
         {% for row in results %}
         <tr>
             <td>{{ row['Coin'] }}</td>
-            <td>{{ row['Total'] }}</td>
+            <td>{{ row['Total']|float }}</td>
         </tr>
         {% endfor %}
     </table>
