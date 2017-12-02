@@ -2,7 +2,7 @@ import os
 import datetime
 import decimal
 import pymysql.cursors
-from flask import Flask, request, render_template, g, url_for, abort, flash, redirect
+from flask import Flask, request, render_template, g, url_for, abort, redirect
     
 
 app = Flask(__name__)
@@ -88,7 +88,6 @@ def add_wallet():
     with connection.cursor() as cursor:
         cursor.execute("INSERT INTO wallet (name) values (%s)",
                        (request.form['name']))
-        #flash("New wallet successfully added")
     return redirect(url_for('show_all_wallets'))
 
 @app.route('/delete_wallet', methods=['POST'])
@@ -96,7 +95,6 @@ def delete_wallet():
     connection = connect_db()
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM wallet WHERE id = %s", (request.form['wallet_id']))
-    #flash("Wallet deleted.")
     return redirect(url_for('show_all_wallets'))
 
 
@@ -116,7 +114,6 @@ def add_currency():
     with connection.cursor() as cursor:
         cursor.execute("INSERT INTO currency (name, ticker) VALUES (%s, %s)",
                        (request.form['name'], request.form['ticker']))
-        #flash("New currency successfully added")
     return redirect(url_for('currencies'))
 
 @app.route('/delete_currency', methods=['POST'])
@@ -124,7 +121,6 @@ def delete_currency():
     connection = connect_db()
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM currency WHERE id = %s", (request.form['currency_id']))
-    #flash("Currency deleted.")
     return redirect(url_for('currencies'))
 
 @app.route('/contacts')
@@ -143,15 +139,33 @@ def add_contact():
     with connection.cursor() as cursor:
         cursor.execute("INSERT INTO contact (name, type) VALUES (%s, %s)", 
                 (request.form['name'], request.form['type']))
-        #flash("New contact successfully added")
     return redirect(url_for('contacts'))
+
+@app.route('/show_contact/<contact_id>', methods=['POST'])
+def show_contact(contact_id):
+    connection = connect_db()
+    results = {'contact_id': contact_id}
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT name, type FROM contact WHERE id = (%s)", contact_id) 
+        results.update(cursor.fetchone())
+    return render_template('show_contact.html', results=results)
+
+
+@app.route('/edit_contact', methods=['POST'])
+def edit_contact():
+    connection = connect_db()
+    with connection.cursor() as cursor:
+        query = """UPDATE contact SET name=(%s), type=(%s) WHERE id=(%s)"""
+        print(request.form)
+        cursor.execute(query, (request.form['name'], request.form['type'], request.form['contact_id']))
+    return redirect(url_for('contacts'))
+
 
 @app.route('/delete_contact', methods=['POST'])
 def delete_contact():
     connection = connect_db()
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM contact WHERE id = %s", (request.form['contact_id']))
-    #flash("Contact deleted.")
     return redirect(url_for('contacts'))
 
 @app.route('/wallets/<wallet_id>', methods=['GET','POST'])
@@ -230,7 +244,6 @@ def add_transaction(wallet_id):
                 wallet_id, 
                 request.form['contact_id'], 
                 request.form['notes']))
-        #flash("New transaction successfully added")
 
         # Now adjust amount in wallet_currency
         cursor.execute("""SELECT amount from wallet_currency WHERE wid = (%s)
@@ -264,8 +277,6 @@ def delete_transaction(wallet_id):
         cursor.execute(query, (new_amt, wallet_id, txn_curid))
 
         cursor.execute("DELETE FROM transaction WHERE id = %s", (request.form['transaction_id']))
-        #flash("Transaction deleted.")
-        #flash("Wallet balance updated.")
     return redirect(url_for('show_wallet', wallet_id=wallet_id, currency_id='all'))
 
 

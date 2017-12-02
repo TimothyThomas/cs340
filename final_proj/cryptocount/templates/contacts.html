@@ -6,9 +6,15 @@
         {% for row in results %}
         <tr>
             <td>{{ row['name'] }}</td> <td>{{ row['type'] }}</td>
+
+            <td><form action="{{ url_for('show_contact', contact_id=row['id']) }}" method="post" class=show-contact>
+                    <input type="hidden" name="contact_id" value="{{ row['id'] }}">
+                    <input type="submit" value="edit" >
+                </form></td>
+
             <td><form action="{{ url_for('delete_contact') }}" method="post" class=delete-contact>
                     <input type="hidden" name="contact_id" value="{{ row['id'] }}">
-                    <input type="submit" value="Delete"
+                    <input type="submit" value="delete"
                  onclick="return confirm('Are you sure?  This will delete all transactions with this contact.')"/>
                 </form></td>
         </tr>
@@ -35,5 +41,4 @@
     </fieldset>
     </form>
     <p></p>
-<a href="{{ url_for('show_currency_balances') }}">back to current balances</a>
 {% endblock %}
