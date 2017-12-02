@@ -9,12 +9,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <body>
     <div class="topnav" id="myTopnav">
+        <a href="{{ url_for('show_currency_balances') }}">home</a>
         <a href="{{ url_for('show_all_wallets') }}">wallets</a>
         <a href="{{ url_for('currencies') }}">currencies</a>
         <a href="{{ url_for('contacts') }}">contacts</a>
     </div>
-</body>
-    <hr>
     {% block content %}{% endblock %}
 </body>
 </html>

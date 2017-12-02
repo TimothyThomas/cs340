@@ -2,10 +2,10 @@
 {% block content %}
     <h1>Your Contacts</h1>
     <table class="w3-table w3-bordered w3-striped">
-        <thead><tr><th>Name</th></tr></thead>
+        <thead><tr><th>Contact</th><th>Type</th></tr></thead>
         {% for row in results %}
         <tr>
-            <td>{{ row['name'] }}</td>
+            <td>{{ row['name'] }}</td> <td>{{ row['type'] }}</td>
             <td><form action="{{ url_for('delete_contact') }}" method="post" class=delete-contact>
                     <input type="hidden" name="contact_id" value="{{ row['id'] }}">
                     <input type="submit" value="Delete"
@@ -23,6 +23,12 @@
         <label for="name">Name:</label>
         <input type="text" name="name" id="name" size="20">
         </p>
+        <label for="type">Type:</label>
+        <select name="type" id="type">
+            <option value='person'>person</option>
+            <option value='retailer'>retailer</option>
+            <option value='exchange'>exchange</option>
+        </select>
         <p>
         <input type="submit" id="add_contact" value="add contact">
         </p>

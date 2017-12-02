@@ -132,7 +132,7 @@ def contacts():
     """Show all contacts."""
     connection = connect_db()
     with connection.cursor() as cursor:
-        query = """SELECT id, name FROM contact"""
+        query = """SELECT id, name, type FROM contact"""
         cursor.execute(query)
         results = cursor.fetchall()
     return render_template('contacts.html', results=results)
@@ -141,7 +141,8 @@ def contacts():
 def add_contact():
     connection = connect_db()
     with connection.cursor() as cursor:
-        cursor.execute("INSERT INTO contact (name) VALUES (%s)", (request.form['name']))
+        cursor.execute("INSERT INTO contact (name, type) VALUES (%s, %s)", 
+                (request.form['name'], request.form['type']))
         #flash("New contact successfully added")
     return redirect(url_for('contacts'))
 

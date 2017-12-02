@@ -7,7 +7,7 @@
     {% for row in results['wallet_balances'] %}
     <tr>
         <td>{{ row['ticker'] }}</td>
-        <td>{{ row['amount'] }}</td>
+        <td>{{ row['amount']|float }}</td>
         <td>
             <form action="{{ url_for('delete_wallet_currency', wallet_id=results['wallet_id']) }}" method="post" class=delete-wallet_currency>
                 <input type="hidden" name="currency_id" value="{{ row['curid'] }}">
@@ -31,7 +31,7 @@
             </select> (if this dropdown box is empty, this wallet already holds all available currencies)
         </p> <p>
             <label for="initial_amount">Initial Amount:</label>
-            <input type="float" name="initial_amount" id="initial_amount" size="20", value=1.0>
+            <input type="float" name="initial_amount" id="initial_amount" size="20", value=0.0>
         </p>
         <p>
             <input type="submit" id="add_wallet_currency" value="add currency to wallet">

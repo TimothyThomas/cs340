@@ -41,8 +41,8 @@ CREATE TABLE `wallet_currency` (
   `cid` int(11) NOT NULL,
   `amount` DECIMAL(16,8) NOT NULL,
   PRIMARY KEY (`wid`, `cid`),
-  FOREIGN KEY (`wid`) REFERENCES `wallet` (`id`),
-  FOREIGN KEY (`cid`) REFERENCES `currency` (`id`)
+  FOREIGN KEY (`wid`) REFERENCES `wallet` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`cid`) REFERENCES `currency` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 
@@ -56,8 +56,8 @@ CREATE TABLE `transaction` (
   `amount` DECIMAL(16,8) NOT NULL,
   `notes` text,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`wid`) REFERENCES `wallet` (`id`),
-  FOREIGN KEY (`curid`) REFERENCES `currency` (`id`),
+  FOREIGN KEY (`wid`) REFERENCES `wallet` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`curid`) REFERENCES `currency` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`contid`) REFERENCES `contact` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
@@ -90,10 +90,3 @@ INSERT INTO wallet_currency (wid, cid, amount) VALUES (1,2,5.12345678);
 INSERT INTO wallet_currency (wid, cid, amount) VALUES (2,2,5.12345678);
 INSERT INTO wallet_currency (wid, cid, amount) VALUES (1,3,99.0);
 INSERT INTO wallet_currency (wid, cid, amount) VALUES (2,3,99.0);
-
-
-select * from currency;
-select * from contact;
-select * from wallet;
-select * from transaction;
-select * from wallet_currency;
