@@ -2,6 +2,7 @@ import os
 import datetime
 import decimal
 import pymysql.cursors
+import sqlparse
 from flask import Flask, request, render_template, g, url_for, abort, redirect
     
 
@@ -24,13 +25,14 @@ def close_db(error):
 
 
 def connect_db():
-    #connection = pymysql.connect(host='classmysql.engr.oregonstate.edu',
-    #                            user='cs340_thomasti',
-    #                            password='9379',
-    connection = pymysql.connect(host='localhost',
-                                user='root',
-                                password='10%percent',
-                                db='crypto',
+    connection = pymysql.connect(host='classmysql.engr.oregonstate.edu',
+                                user='cs340_thomasti',
+                                password='9379',
+                                db='cs340_thomasti',
+    #connection = pymysql.connect(host='localhost',
+    #                            user='root',
+    #                            password='10%percent',
+    #                            db='crypto',
                                 autocommit=True,
                                 connect_timeout=60,
                                 read_timeout=60,
@@ -42,7 +44,10 @@ def init_db():
     db = get_db()
     with app.open_resource('schema.sql', mode='r') as f:
         with db.cursor() as cursor:
-            cursor.execute(f.read())
+            for statement in sqlparse.split(f.read()):
+                if not statement:
+                    continue
+                cursor.execute(statement)
 
 @app.cli.command('initdb')
 def initdb_command():
@@ -61,7 +66,7 @@ def show_currency_balances():
         BTC    2.0
         LTC    3.5
     """
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
         query = """SELECT C.ticker as Coin, SUM(WC.amount) as Total FROM wallet W
 INNER JOIN wallet_currency WC on WC.wid = W.id 
@@ -74,7 +79,7 @@ GROUP BY C.ticker;"""
 @app.route('/wallets')
 def show_all_wallets():
     """Show all wallets."""
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
         query = """SELECT id, name FROM wallet"""
         cursor.execute(query)
@@ -84,7 +89,7 @@ def show_all_wallets():
 
 @app.route('/add_wallet', methods=['POST'])
 def add_wallet():
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
         cursor.execute("INSERT INTO wallet (name) values (%s)",
                        (request.form['name']))
@@ -92,7 +97,7 @@ def add_wallet():
 
 @app.route('/delete_wallet', methods=['POST'])
 def delete_wallet():
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM wallet WHERE id = %s", (request.form['wallet_id']))
     return redirect(url_for('show_all_wallets'))
@@ -101,7 +106,7 @@ def delete_wallet():
 @app.route('/currencies')
 def currencies():
     """Show all currencies."""
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
         query = """SELECT id, name, ticker FROM currency"""
         cursor.execute(query)
@@ -110,7 +115,7 @@ def currencies():
 
 @app.route('/add_currency', methods=['POST'])
 def add_currency():
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
         cursor.execute("INSERT INTO currency (name, ticker) VALUES (%s, %s)",
                        (request.form['name'], request.form['ticker']))
@@ -118,7 +123,7 @@ def add_currency():
 
 @app.route('/delete_currency', methods=['POST'])
 def delete_currency():
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM currency WHERE id = %s", (request.form['currency_id']))
     return redirect(url_for('currencies'))
@@ -126,7 +131,7 @@ def delete_currency():
 @app.route('/contacts')
 def contacts():
     """Show all contacts."""
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
         query = """SELECT id, name, type FROM contact"""
         cursor.execute(query)
@@ -135,7 +140,7 @@ def contacts():
 
 @app.route('/add_contact', methods=['POST'])
 def add_contact():
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
         cursor.execute("INSERT INTO contact (name, type) VALUES (%s, %s)", 
                 (request.form['name'], request.form['type']))
@@ -143,7 +148,7 @@ def add_contact():
 
 @app.route('/show_contact/<contact_id>', methods=['POST'])
 def show_contact(contact_id):
-    connection = connect_db()
+    connection = get_db()
     results = {'contact_id': contact_id}
     with connection.cursor() as cursor:
         cursor.execute("SELECT name, type FROM contact WHERE id = (%s)", contact_id) 
@@ -153,7 +158,7 @@ def show_contact(contact_id):
 
 @app.route('/edit_contact', methods=['POST'])
 def edit_contact():
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
         query = """UPDATE contact SET name=(%s), type=(%s) WHERE id=(%s)"""
         print(request.form)
@@ -163,7 +168,7 @@ def edit_contact():
 
 @app.route('/delete_contact', methods=['POST'])
 def delete_contact():
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM contact WHERE id = %s", (request.form['contact_id']))
     return redirect(url_for('contacts'))
@@ -172,7 +177,7 @@ def delete_contact():
 def show_wallet(wallet_id, filter_on_currency_id=None):
     """Show all balances and transactions for a given wallet and currency
     (default is all currencies in wallet)."""
-    connection = connect_db()
+    connection = get_db()
     results = {'wallet_id': wallet_id,
                'today': get_today_date()}
     if not filter_on_currency_id:
@@ -234,7 +239,7 @@ WHERE W.id = (%s)""", (wallet_id))
 
 @app.route('/add_transaction/<wallet_id>', methods=['POST'])
 def add_transaction(wallet_id):
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
         query = """INSERT INTO transaction (date, curid, amount, wid, contid, notes) VALUES (%s, %s, %s, %s, %s, %s)"""
         cursor.execute(query, (
@@ -257,7 +262,7 @@ def add_transaction(wallet_id):
 
 @app.route('/delete_transaction/<wallet_id>', methods=['POST'])
 def delete_transaction(wallet_id):
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
 
         # get amount of transaction and update wallet_currency before deleting
@@ -282,7 +287,7 @@ def delete_transaction(wallet_id):
 
 @app.route('/add_wallet_currency/<wallet_id>', methods=['POST'])
 def add_wallet_currency(wallet_id):
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
         query = """INSERT INTO wallet_currency (wid, cid, amount) VALUES (%s, %s, %s)"""
         cursor.execute(query, ( wallet_id, request.form['currency_id'], request.form['initial_amount']))
@@ -291,7 +296,7 @@ def add_wallet_currency(wallet_id):
 
 @app.route('/delete_wallet_currency/<wallet_id>', methods=['POST'])
 def delete_wallet_currency(wallet_id):
-    connection = connect_db()
+    connection = get_db()
     with connection.cursor() as cursor:
 
         # First delete all transactions involving this wallet_currency
