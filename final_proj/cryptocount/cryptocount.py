@@ -29,10 +29,13 @@ def connect_db():
                                 user='cs340_thomasti',
                                 password='9379',
                                 db='cs340_thomasti',
+
+    # USE THE FOLLOWING WHEN DEVELOPING LOCALLY
     #connection = pymysql.connect(host='localhost',
     #                            user='root',
-    #                            password='10%percent',
+    #                            password='<insert mysql password>',
     #                            db='crypto',
+
                                 autocommit=True,
                                 connect_timeout=60,
                                 read_timeout=60,
@@ -316,5 +319,5 @@ def get_today_date():
 
 
 if __name__ == '__main__':
-#    app.run(host='0.0.0.0', port=19538)
+    app.run(host='0.0.0.0', port=19539)
     app.run(debug=True)
