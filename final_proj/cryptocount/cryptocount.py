@@ -3,6 +3,7 @@ import datetime
 import decimal
 import pymysql.cursors
 import sqlparse
+import sys
 from flask import Flask, request, render_template, g, url_for, abort, redirect
     
 
@@ -319,5 +320,8 @@ def get_today_date():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=19539)
-    app.run(debug=True)
+    if len(sys.argv) > 1:
+        port = int(sys.argv[1])
+    else:
+        port = 5000
+    app.run(host='0.0.0.0', port=port, debug=True)
