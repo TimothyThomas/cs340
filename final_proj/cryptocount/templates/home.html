@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Current Balances:</h1>
+    <h1>Overall Balances</h1>
+    (this table shows the sums for currencies held across all your wallets)
+    <p>
     <table class="w3-table w3-bordered w3-striped">
-        <thead><tr><th>Coin</th><th>Total</th></tr></thead>
+        <thead><tr><th>Currency</th><th>Total</th></tr></thead>
         {% for row in results %}
         <tr>
             <td>{{ row['Coin'] }}</td>

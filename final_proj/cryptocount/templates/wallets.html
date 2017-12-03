@@ -7,26 +7,26 @@
         <tr>
             <td>{{ row['name'] }}</td>
             <td>
-                <a href="{{ url_for('show_wallet', wallet_id=row['id']) }}">view balances and transactions</a>
+                <a href="{{ url_for('show_wallet', wallet_id=row['id']) }}">CLICK to view balances and transactions</a>
             </td>
             <td>
                 <form action="{{ url_for('delete_wallet') }}" method="post" class=delete-wallet>
                     <input type="hidden" name="wallet_id" value="{{ row['id'] }}">
-                    <input type="submit" value="Delete"
+                    <input type="submit" value="Delete Wallet"
                  onclick="return confirm('Are you sure?  This will delete all currencies and transactions for this wallet.')"/>
                 </form>
             </td>
         </tr>
         {% endfor %}
     </table>
-    <p></p>
+    <p>.</p>
 
     <form action="{{ url_for('add_wallet') }}" method=post class=add_wallet>
     <fieldset>
-        <legend>Add a new wallet here:</legend>
+        <legend>Add a new wallet</legend>
         <p>
         <label for="name">Name:</label>
-        <input type="text" name="name" id="name" size="20">
+        <input type="text" name="name" id="name" size="20" required>
         </p>
         <p>
         <input type="submit" id="add_wallet" value="add wallet">

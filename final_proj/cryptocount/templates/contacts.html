@@ -9,25 +9,25 @@
 
             <td><form action="{{ url_for('show_contact', contact_id=row['id']) }}" method="post" class=show-contact>
                     <input type="hidden" name="contact_id" value="{{ row['id'] }}">
-                    <input type="submit" value="edit" >
+                    <input type="submit" value="edit contact" >
                 </form></td>
 
             <td><form action="{{ url_for('delete_contact') }}" method="post" class=delete-contact>
                     <input type="hidden" name="contact_id" value="{{ row['id'] }}">
-                    <input type="submit" value="delete"
+                    <input type="submit" value="delete contact"
                  onclick="return confirm('Are you sure?  This will delete all transactions with this contact.')"/>
                 </form></td>
         </tr>
         {% endfor %}
     </table>
-    <p></p>
+    <p>.</p>
 
     <form action="{{ url_for('add_contact') }}" method=post class=add_contact>
     <fieldset>
         <legend>Add a new contact here:</legend>
         <p>
         <label for="name">Name:</label>
-        <input type="text" name="name" id="name" size="20">
+        <input type="text" name="name" id="name" size="20" required>
         </p>
         <label for="type">Type:</label>
         <select name="type" id="type">

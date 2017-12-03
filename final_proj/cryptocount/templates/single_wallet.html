@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Currently Viewing Wallet: {{ results['wallet_name'] }} </h1>
-    <h2>Current Balances</h2>
+<h3>Details for: {{ results['wallet_name'] }} </h3>
+(this table shows your balances in this wallet)
 <table class="w3-table w3-bordered w3-striped">
-    <thead><tr><th>Coin</th><th>Balance</th></tr></thead>
+    <thead><tr><th>Currency</th><th>Balance</th></tr></thead>
     {% for row in results['wallet_balances'] %}
     <tr>
         <td>{{ row['ticker'] }}</td>
@@ -18,7 +18,7 @@
     </tr>
     {% endfor %}
 </table>
-<p></p>
+<p>.</p>
     <form action="{{ url_for('add_wallet_currency', wallet_id=results['wallet_id']) }}" method=post class=add_wallet_currency>
     <fieldset>
         <legend>Add a currency to hold in this wallet</legend>
@@ -31,15 +31,12 @@
             </select> (if this dropdown box is empty, this wallet already holds all available currencies)
         </p> <p>
             <label for="initial_amount">Initial Amount:</label>
-            <input type="float" name="initial_amount" id="initial_amount" size="20", value=0.0>
-        </p>
-        <p>
+            <input type="float" name="initial_amount" id="initial_amount" size="10", value=0.0>
             <input type="submit" id="add_wallet_currency" value="add currency to wallet">
         </p>
     </fieldset>
     </form>
-    <p></p>
-<h2>Transaction History</h2>
+<h3>Transaction History</h3>
     <p>
         <form action="{{ url_for('show_wallet', wallet_id=results['wallet_id']) }}" method=post class=filter_transaction>
         <label for="currency">Filter by:</label>
@@ -72,27 +69,22 @@
         </tr>
         {% endfor %}
     </table>
-    <p></p>
+    <p>.</p>
 
     <form action="{{ url_for('add_transaction', wallet_id=results['wallet_id']) }}" method=post class=add_transaction>
     <fieldset>
-        <legend>Add a new transaction here:</legend>
+        <legend>Add a new transaction</legend>
         <p>
         <label for="date">Date:</label>
-        <input type="date" name="date" id="date" size="20" value={{ results['today'] }}>
-        </p>
-        <p>
-            <label for="currency">Currency:</label>
+        <input type="date" name="date" id="date" size="12" value={{ results['today'] }}>
+            <label for="currency">  Currency:  </label>
             <select name="currency_id" id="ticker">
                 {% for row in results['wallet_currencies'] %}
                     <option value={{ row['id'] }}>{{ row['ticker'] }}</option>
                 {% endfor %}
             </select>
-        </p>
-        <p>
-            <label for="amount">Amount:</label>
-            <input type="float" name="amount" id="amount" size="20", value=1.0>
-        </p>
+            <label for="amount">  Amount:</label>
+            <input type="float" name="amount" id="amount" size="10", value=1.0>
         <p>
             <label for="contact">To/From:</label>
             <select name="contact_id" id="contact">
@@ -100,8 +92,6 @@
                     <option value={{ row['id'] }}>{{ row['name'] }}</option>
                 {% endfor %}
             </select>
-        </p>
-        <p>
             <label for="notes">Notes:</label>
             <input type="text" name="notes" id="notes" size="20" maxlength="100">
         </p>

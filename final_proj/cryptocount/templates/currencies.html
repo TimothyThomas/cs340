@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
     <h1>Currencies</h1>
+    (these are the currencies available to store in wallets and use in transactions)
+    <p></p>
     <table class="w3-table w3-bordered w3-striped">
         <thead><tr><th>Name</th><th>Ticker</th></tr></thead>
         {% for row in results %}
@@ -8,24 +10,24 @@
             <td>{{ row['name'] }}</td><td> {{ row['ticker'] }}</td>
             <td><form action="{{ url_for('delete_currency') }}" method="post" class=delete-currrency>
                     <input type="hidden" name="currency_id" value="{{ row['id'] }}">
-                    <input type="submit" value="Delete"
+                    <input type="submit" value="Delete Currency"
                  onclick="return confirm('Are you sure?  This will delete this currency from all wallets and all transactions containing this currency.')"/>
             </form></td>
         </tr>
         {% endfor %}
     </table>
-    <p></p>
+    <p>.</p>
 
     <form action="{{ url_for('add_currency') }}" method=post class=add_currency>
     <fieldset>
         <legend>Add a new currency here:</legend>
         <p>
         <label for="name">Name:</label>
-        <input type="text" name="name" id="name" size="20">
+        <input type="text" name="name" id="name" size="20" required>
         </p>
         <p>
         <label for="ticker">Ticker:</label>
-        <input type="text" name="ticker" id="ticker" size="20">
+        <input type="text" name="ticker" id="ticker" size="20" required>
         </p>
         <p>
         <input type="submit" id="add_currency" value="add currency">
